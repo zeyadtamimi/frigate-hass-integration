@@ -15,7 +15,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
-from .api import FrigateApiClient, FrigateApiClientError
+from .api import FrigateApiClient, FrigateApiClientError, FrigateAuthType
 from .const import (
     CONF_ENABLE_WEBRTC,
     CONF_MEDIA_BROWSER_ENABLE,
@@ -81,8 +81,12 @@ class FrigateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             client = FrigateApiClient(
                 user_input[CONF_URL],
                 session,
+                FrigateAuthType.PROXY if user_input.get('use_proxy_auth', False) else FrigateAuthType.INTERNAL
                 user_input.get(CONF_USERNAME),
                 user_input.get(CONF_PASSWORD),
+                str(user_input.get("proxy_auth_secret", None)),
+                str(user_input.get("proxy_user", None)),
+                str(user_input.get("proxy_groups", None)),
                 bool(user_input.get("validate_ssl")),
             )
             await client.async_get_stats()
@@ -126,10 +130,22 @@ class FrigateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         "validate_ssl", default=user_input.get("validate_ssl", True)
                     ): bool,
                     vol.Optional(
+                        "use_proxy_auth", default=user_input.get("use_proxy_auth", False)
+                    ): bool,
+                    vol.Optional(
                         CONF_USERNAME, default=user_input.get(CONF_USERNAME, "")
                     ): str,
                     vol.Optional(
                         CONF_PASSWORD, default=user_input.get(CONF_PASSWORD, "")
+                    ): str,
+                    vol.Optional(
+                        "proxy_auth_secret", default=user_input.get("proxy_auth_secret", "")
+                    ): str,
+                    vol.Optional(
+                        "proxy_user", default=user_input.get("proxy_user", "")
+                    ): str,
+                    vol.Optional(
+                        "proxy_groups", default=user_input.get("proxy_groups", "")
                     ): str,
                 }
             ),

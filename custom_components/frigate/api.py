@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+import enum
 import logging
 import socket
 from typing import Any, cast
@@ -31,6 +32,9 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 class FrigateApiClientError(Exception):
     """General FrigateApiClient error."""
 
+class FrigateAuthType(enum.Enum):
+   INTERNAL = 1
+   PROXY = 2
 
 class FrigateApiClient:
     """Frigate API client."""
@@ -39,15 +43,23 @@ class FrigateApiClient:
         self,
         host: str,
         session: aiohttp.ClientSession,
+        auth_type: FrigateAuthType = FrigateAuthType.Internal
         username: str | None = None,
         password: str | None = None,
+        proxy_auth_secret: str | None = None,
+        proxy_user: str | None = None
+        proxy_groups: str | None = None
         validate_ssl: bool = True,
     ) -> None:
         """Construct API Client."""
         self._host = host
         self._session = session
+        self._auth_type = auth_type
         self._username = username
         self._password = password
+        self._proxy_auth_secret = proxy_auth_secret
+        self._proxy_user = proxy_user
+        self._proxy_groups = proxy_groups
         self._token_data: dict[str, Any] = {}
         self.validate_ssl = validate_ssl
 
@@ -462,11 +474,23 @@ class FrigateApiClient:
         """
         headers = {}
 
-        if self._username and self._password:
-            await self._refresh_token_if_needed()
+        if self._auth_type == FrigateAuthType.INTERNAL:
+            if self._username and self._password:
+                await self._refresh_token_if_needed()
 
-            if "token" in self._token_data:
-                headers["Authorization"] = f"Bearer {self._token_data['token']}"
+                if "token" in self._token_data:
+                    headers["Authorization"] = f"Bearer {self._token_data['token']}"
+        elif self._auth_type == FrigateAuthType.PROXY:
+            if self._proxy_auth_secret:
+                headers["X-Proxy-Secret"] = self._proxy_auth_secret
+            else:
+                _LOGGER.warning(
+                    "Missing proxy secret, cannot add X-Proxy-Secret header!"
+                )
+            if self._forwarded_user:
+                headers["x_forwarded_user"] = self._proxy_user
+            if self._x_forwarded_groups:
+                headers["x_forwarded_groups"] = self._proxy_groups
 
         return headers
 

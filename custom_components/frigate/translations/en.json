@@ -6,8 +6,12 @@
         "data": {
           "url": "URL",
           "validate_ssl": "Validate SSL",
+          "use_proxy_auth": "Authenticate using X-Proxy-Secret HTTP headers",
           "username": "Username (optional)",
-          "password": "Password (optional)"
+          "password": "Password (optional)",
+          "proxy_auth_secret": "Secret to be forward via X-Proxy-Secret HTTP header when proxy authentication is active",
+          "proxy_user": "Username to forward via x-forwarded-user HTTP Header when proxy authentication is active",
+          "proxy_groups": "Group name to forward via x-forwarded-groups HTTP Header when proxy authentication is active"
         }
       }
     },
