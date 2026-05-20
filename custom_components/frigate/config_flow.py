@@ -81,7 +81,7 @@ class FrigateFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             client = FrigateApiClient(
                 user_input[CONF_URL],
                 session,
-                FrigateAuthType.PROXY if user_input.get('use_proxy_auth', False) else FrigateAuthType.INTERNAL
+                FrigateAuthType.PROXY if user_input.get('use_proxy_auth', False) else FrigateAuthType.INTERNAL,
                 user_input.get(CONF_USERNAME),
                 user_input.get(CONF_PASSWORD),
                 str(user_input.get("proxy_auth_secret", None)),
