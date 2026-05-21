@@ -51,7 +51,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.loader import async_get_integration
 from homeassistant.util import slugify
 
-from .api import FrigateApiClient, FrigateApiClientError
+from .api import FrigateApiClient, FrigateApiClientError, FrigateAuthType
 from .const import (
     ATTR_CLIENT,
     ATTR_CONFIG,
@@ -290,8 +290,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     client = FrigateApiClient(
         str(entry.data.get(CONF_URL)),
         async_get_clientsession(hass),
+        FrigateAuthType.PROXY if entry.data.get('use_proxy_auth', False) else FrigateAuthType.INTERNAL,
         entry.data.get(CONF_USERNAME),
         entry.data.get(CONF_PASSWORD),
+        str(entry.data.get("proxy_auth_secret", None)),
+        str(entry.data.get("proxy_user", None)),
+        str(entry.data.get("proxy_groups", None)),
         bool(entry.data.get("validate_ssl")),
     )
     coordinator = FrigateDataUpdateCoordinator(hass, client=client)
