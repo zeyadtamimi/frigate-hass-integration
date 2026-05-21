@@ -474,6 +474,7 @@ class FrigateApiClient:
         """
         headers = {}
 
+        _LOGGER.warning( f"Using auth method: {self._auth_type}" )
         if self._auth_type == FrigateAuthType.INTERNAL:
             if self._username and self._password:
                 await self._refresh_token_if_needed()
