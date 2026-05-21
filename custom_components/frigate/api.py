@@ -47,8 +47,8 @@ class FrigateApiClient:
         username: str | None = None,
         password: str | None = None,
         proxy_auth_secret: str | None = None,
-        proxy_user: str | None = None
-        proxy_groups: str | None = None
+        proxy_user: str | None = None,
+        proxy_groups: str | None = None,
         validate_ssl: bool = True,
     ) -> None:
         """Construct API Client."""
