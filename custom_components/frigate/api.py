@@ -487,9 +487,9 @@ class FrigateApiClient:
                 _LOGGER.warning(
                     "Missing proxy secret, cannot add X-Proxy-Secret header!"
                 )
-            if self._forwarded_user:
+            if self._proxy_user:
                 headers["x_forwarded_user"] = self._proxy_user
-            if self._x_forwarded_groups:
+            if self._proxy_groups:
                 headers["x_forwarded_groups"] = self._proxy_groups
 
         return headers
