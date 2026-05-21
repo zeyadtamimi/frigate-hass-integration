@@ -43,7 +43,7 @@ class FrigateApiClient:
         self,
         host: str,
         session: aiohttp.ClientSession,
-        auth_type: FrigateAuthType = FrigateAuthType.Internal,
+        auth_type: FrigateAuthType = FrigateAuthType.INTERNAL,
         username: str | None = None,
         password: str | None = None,
         proxy_auth_secret: str | None = None,
